@@ -1,0 +1,46 @@
+<p style="color: green"><%= notice %></p>
+
+<h1>Books</h1>
+
+<div id="books">
+  <%= form_with method: :get do |form| %>
+    <%= form.text_field :query, value: params[:query] %>
+  <% end %>
+
+  <div>
+    <p>Hits: <%= number_to_human @books.raw_answer['nbHits'] %></p>
+    <p>Search processing time: <%= @books.raw_answer['processingTimeMs'] %>ms</p>
+  </div>
+
+  <table border="0" width="100%" class="search-results-table">
+    <thead>
+    <tr>
+      <th>Title</th>
+      <th>Author</th>
+      <th>Genre</th>
+      <th>Publisher</th>
+      <th>Description</th>
+      <th>Created At</th>
+    </tr>
+    </thead>
+    <tbody>
+    <% @books.each do |book| %>
+      <tr>
+        <td>
+          <%= link_to book do %>
+          <%== book.formatted['title'] %>
+          <% end %>
+        </td>
+        <td><%== book.formatted['author'] %></td>
+        <td><%== book.formatted['genre'] %></td>
+        <td><%== book.formatted['publisher'] %></td>
+        <td><%== book.formatted['description'] %></td>
+        <td><%== book.created_at %></td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+  <%== pagy_nav(@pagy) %>
+</div>
+
+<%= link_to "New book", new_book_path %>
