@@ -1,0 +1,37 @@
+version: "3.9"
+services:
+  pg:
+    image: postgres:14.1-alpine
+    ports:
+      - 5432
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: password
+  meili:
+    image: getmeili/meilisearch:v0.25.2
+    ports:
+      - "7700:7700"
+    volumes:
+      - meilisearch_data:/data.ms
+    environment:
+      MEILI_MASTER_KEY: meiliKey
+  app:
+    env_file:
+      - .env.dev
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    command: bundle exec rails s -p 3000 -b 0.0.0.0
+    volumes:
+      - .:/app
+      - gemset_data:/usr/local/bundle/
+    ports:
+      - "3000:3000"
+    depends_on:
+      - pg
+      - meili
+volumes:
+  pg_data:
+  gemset_data:
+  meilisearch_data:
